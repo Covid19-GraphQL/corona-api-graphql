@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/src/index.js", "use": "@now/node" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "api/src/index.js" }
+  ],
+  "build": {
+    "env": {
+      "GRAPHQL_URI": "@graphql_uri",
+      "GRAPHQL_LISTEN_PORT": "@graphql_listen_port",
+      "CORONA_API_URL": "@corona_api_url"
+    }
+  },
+  "env": {
+    "GRAPHQL_URI": "@graphql_uri",
+    "GRAPHQL_LISTEN_PORT": "@graphql_listen_port",
+    "CORONA_API_URL": "@corona_api_url"
+  }
+}

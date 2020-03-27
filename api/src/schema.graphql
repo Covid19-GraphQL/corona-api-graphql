@@ -1,0 +1,243 @@
+# Query API for the CoronaAPI project v1 REST API
+# See: https://corona.ndo.dev/api-docs/
+type Query {
+  """
+  Get high-level daily data on Corona infections around the
+  world or for a specific country.
+  """
+  # See: https://corona.ndo.dev/api-docs/#/Daily/get_daily
+  Daily(
+    country: String
+    state: String
+    county: String
+    city: String
+    rating: Float
+    source: String
+    countryLevelOnly: Boolean
+  ): [CoronaData]
+  """
+  Get only confirmed daily case numbers
+  """
+  # See: https://corona.ndo.dev/api-docs/#/Daily/get_daily_confirmed
+  DailyConfirmed(
+    country: String
+    state: String
+    county: String
+    city: String
+    rating: Float
+    source: String
+  ): [CoronaDataConfirmed]
+  """
+  Get only daily 'deaths' numbers
+  """
+  # See: https://corona.ndo.dev/api-docs/#/Daily/get_daily_recovered
+  DailyRecovered(
+    country: String
+    state: String
+    county: String
+    city: String
+    rating: Float
+    source: String
+  ): [CoronaDataRecovered]
+  """
+  Get only daily recovered numbers
+  """
+  # See: https://corona.ndo.dev/api-docs/#/Daily/get_daily_deaths
+  DailyDeaths(
+    country: String
+    state: String
+    county: String
+    city: String
+    rating: Float
+    source: String
+  ): [CoronaDataDeaths]
+  """
+  Get Corona data for each country from different data sources.
+  """
+  # See: https://corona.ndo.dev/api-docs/#/Daily/get_countries
+  DailyCountries(country: String): JSONObject
+  """
+  Get data over time for a specific country.
+  """
+  # See: https://corona.ndo.dev/api-docs/#/Timeseries/get_timespan
+  TimeSeries(country: String, time: TimeSpan!): CoronaTimeSeries
+  """
+  Get a list of datasources available via this API.
+  """
+  # See: https://corona.ndo.dev/api-docs/#/Meta/get_datasources
+  DataSources: [String]
+  """
+  Get a list of datasources and their maintainers and contact info.
+  """
+  # See: https://corona.ndo.dev/api-docs/#/Meta/get_datasources_details
+  DataSourcesDetails: [DataSourcesDetails]
+  """
+  Total world figures, split on datasource
+  """
+  # See: https://corona.ndo.dev/api-docs/#/Meta/get_total
+  DataSourcesTotal: [DataSourcesTotal]
+  """
+  Get metadata on the REST API under use. That includes information
+  like where to find the code, where to create new tickets or when
+  the underlying data has been updated the last time.
+  """
+  # See: https://corona.ndo.dev/api-docs/#/Meta/get_meta
+  Metadata: Metadata
+}
+
+type CoronaData implements CoronaDataConfirmed & CoronaDataRecovered & CoronaDataDeaths {
+  """
+  The country according to ISO 3166-1 alpha-3 for which the data is valid.
+
+  See: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
+
+  Example: USA
+  """
+  country: String!
+  """
+  The geographical region of a country for which the data is valid.
+
+  Example: MO
+  """
+  state: String
+  """
+  The geographical region of a state or country for which the data is valid.
+
+  Example: Knox County
+  """
+  county: String
+  """
+  The total number of cases taken into account the specified date filters 'since' and 'until'.
+
+  Example: New York City
+
+  Note: New York City is the currently only instance of this field having a value
+  """
+  city: String
+  """
+  The total number of cases taken into account the specified date filters 'since' and 'until'.
+
+  Example: 19848
+  """
+  cases: Int
+  """
+  The number of people living in the country/state/county.
+
+  Example: 19848
+  """
+  population: Float
+  """
+  The number of recovered people taken into account the specified date filters 'since' and 'until'.
+
+  Example: 180
+  """
+  recovered: Int
+  """
+  The number of people that died due to Corona Virus taken into account the specified date filters 'since' and 'until'.
+
+  Example: 68
+  """
+  deaths: Int
+  """
+  The number of people that are currently infected with Corona Virus taken into account the specified date filters 'since' and 'until'.
+
+  Example: 19600
+  """
+  active: Int
+  """
+  https://covid19-germany.appspot.com/now
+
+  Example: MO
+  """
+  url: String
+  """
+  A rating of the data that takes into account completeness, machine readability and best practices.
+
+  Example: 0.17073170731707318
+  """
+  rating: Float!
+  """
+  The coordinates (longitude and latitude) representing the data set.
+
+  Note: minItems: 2, maxItems: 2
+
+  Example: List [ 10.2, 51 ]
+  """
+  coordinates: [Float]
+}
+
+interface CoronaDataConfirmed {
+  country: String!
+  cases: Int
+  url: String
+}
+
+interface CoronaDataRecovered {
+  country: String!
+  recovered: Int
+  url: String
+}
+
+interface CoronaDataDeaths {
+  country: String!
+  deaths: Int
+  url: String
+}
+
+enum TimeSpan {
+  week
+  month
+  year
+}
+
+type CoronaTimeSeries {
+  timeSpan: TimeSpan
+  startingDay: String
+  timeseries: [TimeSeries]
+}
+
+type TimeSeries {
+  date: String
+  data: [CoronaData]
+}
+
+type CoronaPerCountryAndDatasource {
+  cases: Int
+  population: Float
+  recovered: Int
+  deaths: Int
+  active: Int
+  rating: Float
+  coordinates: [Float]
+}
+
+type DataSourcesDetails {
+  country: String
+  state: String
+  aggregate: String
+  source: String
+  rating: Float
+  type: String
+}
+
+type DataSourcesTotal {
+  source: String!
+  sum: Int
+  sumArray: DataSourceTotal
+}
+
+type DataSourceTotal {
+  citySum: Int
+  countySum: Int
+  stateSum: Int
+  countrySum: Int
+}
+
+type Metadata {
+  lastUpdate: String!
+  repo: String!
+  bug: String!
+  remember: String!
+}
+
+scalar JSONObject
