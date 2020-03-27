@@ -10,7 +10,7 @@
     "now-build": "babel src -d build && shx cp src/schema.graphql build",
     "start": "npm run build && node build/index.js"
   },
-  "author": "William Lyon",
+  "author": "Michael Graham",
   "license": "MIT",
   "dependencies": {
     "apollo-boost": "^0.3.1",
